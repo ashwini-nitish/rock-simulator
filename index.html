@@ -3,12 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rock Transformation Simulator</title>
+<title>Interactive Rock Cycle Simulator</title>
 
 <style>
+
 body{
     font-family:Arial,sans-serif;
     background:linear-gradient(to bottom,#dff1ff,#f8fcff);
+    margin:0;
     padding:20px;
     text-align:center;
 }
@@ -19,16 +21,11 @@ body{
     background:white;
     padding:25px;
     border-radius:20px;
-    box-shadow:0 4px 15px rgba(0,0,0,0.15);
+    box-shadow:0 5px 15px rgba(0,0,0,0.15);
 }
 
 h1{
     color:#0d47a1;
-}
-
-.rock{
-    font-size:90px;
-    margin:20px;
 }
 
 .selector-box{
@@ -36,15 +33,19 @@ h1{
     padding:15px;
     border-radius:12px;
     margin:20px auto;
-    width:300px;
+    max-width:350px;
 }
 
 select{
     padding:10px;
+    width:240px;
     font-size:16px;
     border-radius:8px;
-    border:1px solid #ccc;
-    width:220px;
+}
+
+.rock{
+    font-size:90px;
+    margin:15px;
 }
 
 .slider-container{
@@ -64,9 +65,8 @@ input[type=range]{
     width:90%;
     margin:15px auto;
     height:50px;
-    border-radius:12px;
+    border-radius:10px;
     overflow:hidden;
-    border:2px solid #ddd;
 }
 
 .zone{
@@ -74,8 +74,8 @@ input[type=range]{
     display:flex;
     justify-content:center;
     align-items:center;
-    font-size:12px;
     font-weight:bold;
+    font-size:12px;
 }
 
 .blue{
@@ -85,7 +85,6 @@ input[type=range]{
 
 .yellow{
     background:#FFC107;
-    color:black;
 }
 
 .orange{
@@ -101,9 +100,9 @@ input[type=range]{
 .thermometer{
     width:45px;
     height:220px;
+    margin:20px auto;
     border:3px solid #666;
     border-radius:25px;
-    margin:20px auto;
     overflow:hidden;
     position:relative;
     background:#f5f5f5;
@@ -115,16 +114,16 @@ input[type=range]{
     width:100%;
     height:40%;
     background:#FFC107;
-    transition:.3s;
+    transition:0.3s;
 }
 
 button{
-    padding:12px 20px;
     border:none;
+    padding:12px 22px;
     border-radius:10px;
+    color:white;
     cursor:pointer;
     margin:10px;
-    color:white;
     font-size:16px;
 }
 
@@ -137,12 +136,11 @@ button{
 }
 
 #result{
-    margin-top:20px;
+    background:#f4f4f4;
     padding:20px;
-    background:#f5f5f5;
     border-radius:12px;
+    margin-top:20px;
     min-height:80px;
-    font-size:18px;
 }
 
 #challenge{
@@ -153,18 +151,19 @@ button{
 }
 
 .investigation{
+    margin-top:20px;
     text-align:left;
     background:#eef7ff;
     padding:15px;
-    margin-top:20px;
     border-radius:12px;
 }
 
 .footer{
     margin-top:20px;
-    color:#666;
+    color:#555;
     font-style:italic;
 }
+
 </style>
 </head>
 
@@ -172,39 +171,42 @@ button{
 
 <div class="container">
 
-<h1>🌍 Rock Transformation Simulator</h1>
+<h1>🌍 Interactive Rock Cycle Simulator</h1>
 
 <p>
-Choose a starting rock, adjust the heat and pressure, and discover what happens!
+Choose a starting rock and investigate how heat, pressure,
+cooling and weathering affect it.
 </p>
 
 <div class="selector-box">
-    <h3>Choose Starting Rock</h3>
 
-    <select id="startingRock" onchange="updateStartingRock()">
-        <option value="sedimentary">🪨 Sedimentary Rock</option>
-        <option value="igneous">🧱 Igneous Rock</option>
-    </select>
+<h3>Select Starting Rock</h3>
+
+<select id="startingRock" onchange="updateStartingRock()">
+    <option value="sedimentary">🪨 Sedimentary Rock</option>
+    <option value="igneous">🧱 Igneous Rock</option>
+    <option value="metamorphic">💎 Metamorphic Rock</option>
+</select>
+
 </div>
 
 <div id="rock" class="rock">🪨</div>
 
 <h3>
-Current Rock:
+Current Material:
 <span id="rockName">Sedimentary Rock</span>
 </h3>
-
-<!-- HEAT -->
 
 <div class="slider-container">
 
 <h3>
 🔥 Heat Level:
-<span id="heatLabel" class="value" style="color:#FFC107;">Warm</span>
+<span id="heatLabel" class="value" style="color:#FFC107;">
+Warm
+</span>
 </h3>
 
-<input
-type="range"
+<input type="range"
 id="heat"
 min="0"
 max="100"
@@ -212,45 +214,61 @@ value="40">
 
 <div class="temp-scale">
 
-<div class="zone blue">
-Low
-</div>
-
-<div class="zone yellow">
-Warm
-</div>
-
-<div class="zone orange">
-High
-</div>
-
-<div class="zone red">
-Melting
-</div>
+<div class="zone blue">Low</div>
+<div class="zone yellow">Warm</div>
+<div class="zone orange">High</div>
+<div class="zone red">Melting</div>
 
 </div>
 
 <div class="thermometer">
-<div class="mercury" id="mercury"></div>
+<div id="mercury" class="mercury"></div>
 </div>
 
 </div>
-
-<!-- PRESSURE -->
 
 <div class="slider-container">
 
 <h3>
 ⬇️ Pressure Level:
-<span id="pressureValue" class="value">50</span>
+<span id="pressureValue">50</span>
 </h3>
 
-<input
-type="range"
+<input type="range"
 id="pressure"
 min="0"
 max="100"
 value="50">
+
+</div>
+
+<div class="slider-container">
+
+<h3>
+❄️ Cooling Level:
+<span id="coolingValue">0</span>
+</h3>
+
+<input type="range"
+id="cooling"
+min="0"
+max="100"
+value="0">
+
+</div>
+
+<div class="slider-container">
+
+<h3>
+🌧️ Weathering Level:
+<span id="weatheringValue">0</span>
+</h3>
+
+<input type="range"
+id="weathering"
+min="0"
+max="100"
+value="0">
 
 </div>
 
@@ -263,23 +281,28 @@ Restart
 </button>
 
 <div id="result">
-Adjust the heat and pressure and click "Transform Rock".
+Adjust the sliders and click Transform Rock.
 </div>
 
 <div id="challenge"></div>
 
 <div class="investigation">
-<h3>🔍 Investigation Challenge</h3>
+
+<h3>🔍 Rock Cycle Investigation</h3>
+
 <ul>
-<li>Can both sedimentary and igneous rocks become metamorphic?</li>
-<li>What combination of heat and pressure forms a metamorphic rock?</li>
-<li>What happens when heat becomes too high?</li>
-<li>Can a rock melt and still become metamorphic?</li>
+<li>Can sedimentary rocks become metamorphic rocks?</li>
+<li>Can igneous rocks become metamorphic rocks?</li>
+<li>What happens when rocks melt?</li>
+<li>What happens when magma cools?</li>
+<li>What does weathering produce?</li>
+<li>Can you complete the entire rock cycle?</li>
 </ul>
+
 </div>
 
 <div class="footer">
-💡 Metamorphic rocks form from heat and pressure WITHOUT melting.
+💡 Metamorphic rocks form through heat and pressure without melting.
 </div>
 
 </div>
@@ -288,169 +311,205 @@ Adjust the heat and pressure and click "Transform Rock".
 
 const heatSlider = document.getElementById("heat");
 const pressureSlider = document.getElementById("pressure");
+const coolingSlider = document.getElementById("cooling");
+const weatheringSlider = document.getElementById("weathering");
 const mercury = document.getElementById("mercury");
 
 heatSlider.oninput = function(){
 
-    const heat = Number(this.value);
+let heat = Number(this.value);
 
-    mercury.style.height = heat + "%";
+mercury.style.height = heat + "%";
 
-    const label = document.getElementById("heatLabel");
+let label = document.getElementById("heatLabel");
 
-    if(heat < 25){
+if(heat < 25){
 
-        label.innerText = "Low";
-        label.style.color = "#2196F3";
-        mercury.style.background = "#2196F3";
-    }
+label.innerHTML = "Low";
+label.style.color = "#2196F3";
+mercury.style.background = "#2196F3";
 
-    else if(heat < 50){
+}
+else if(heat < 50){
 
-        label.innerText = "Warm";
-        label.style.color = "#FFC107";
-        mercury.style.background = "#FFC107";
-    }
+label.innerHTML = "Warm";
+label.style.color = "#FFC107";
+mercury.style.background = "#FFC107";
 
-    else if(heat < 75){
+}
+else if(heat < 75){
 
-        label.innerText = "High";
-        label.style.color = "#FF9800";
-        mercury.style.background = "#FF9800";
-    }
+label.innerHTML = "High";
+label.style.color = "#FF9800";
+mercury.style.background = "#FF9800";
 
-    else{
+}
+else{
 
-        label.innerText = "Melting";
-        label.style.color = "#F44336";
-        mercury.style.background = "#F44336";
-    }
-};
+label.innerHTML = "Melting";
+label.style.color = "#F44336";
+mercury.style.background = "#F44336";
 
-pressureSlider.oninput = function(){
-
-    document.getElementById("pressureValue").innerText =
-    this.value;
+}
 
 };
+
+pressureSlider.oninput = () =>
+document.getElementById("pressureValue").innerHTML =
+pressureSlider.value;
+
+coolingSlider.oninput = () =>
+document.getElementById("coolingValue").innerHTML =
+coolingSlider.value;
+
+weatheringSlider.oninput = () =>
+document.getElementById("weatheringValue").innerHTML =
+weatheringSlider.value;
 
 function updateStartingRock(){
 
-    const type =
-    document.getElementById("startingRock").value;
+const type =
+document.getElementById("startingRock").value;
 
-    if(type === "igneous"){
-        document.getElementById("rock").innerHTML = "🧱";
-        document.getElementById("rockName").innerHTML =
-        "Igneous Rock";
-    }
+if(type==="igneous"){
 
-    else{
-        document.getElementById("rock").innerHTML = "🪨";
-        document.getElementById("rockName").innerHTML =
-        "Sedimentary Rock";
-    }
+document.getElementById("rock").innerHTML="🧱";
+document.getElementById("rockName").innerHTML=
+"Igneous Rock";
+
+}
+else if(type==="metamorphic"){
+
+document.getElementById("rock").innerHTML="💎";
+document.getElementById("rockName").innerHTML=
+"Metamorphic Rock";
+
+}
+else{
+
+document.getElementById("rock").innerHTML="🪨";
+document.getElementById("rockName").innerHTML=
+"Sedimentary Rock";
+
+}
+
 }
 
 function transformRock(){
 
-    const heat = Number(heatSlider.value);
-    const pressure = Number(pressureSlider.value);
+const heat = Number(heatSlider.value);
+const pressure = Number(pressureSlider.value);
+const cooling = Number(coolingSlider.value);
+const weathering = Number(weatheringSlider.value);
 
-    const startRock =
-    document.getElementById("startingRock").value;
+const rock = document.getElementById("rock");
+const rockName = document.getElementById("rockName");
+const result = document.getElementById("result");
+const challenge = document.getElementById("challenge");
 
-    const rock =
-    document.getElementById("rock");
+if(weathering >= 70){
 
-    const rockName =
-    document.getElementById("rockName");
+rock.innerHTML = "⛰️";
+rockName.innerHTML = "Sediment";
 
-    const result =
-    document.getElementById("result");
+result.innerHTML =
+"<h3>🌧️ Weathering Occurred</h3>" +
+"Rock has broken down into sediment.";
 
-    const challenge =
-    document.getElementById("challenge");
+challenge.innerHTML =
+"✅ Discovery: Weathering creates sediment.";
 
-    if(heat >= 75){
+return;
 
-        rock.innerHTML = "🌋";
-        rockName.innerHTML = "Magma";
+}
 
-        result.innerHTML =
-        "<h3>🔥 Rock Melted!</h3>" +
-        "The heat became so high that the rock melted and turned into magma.";
+if(cooling >= 70){
 
-        challenge.innerHTML =
-        "✅ Discovery: Any rock can melt into magma.";
+rock.innerHTML = "🧱";
+rockName.innerHTML = "Igneous Rock";
 
-        return;
-    }
+result.innerHTML =
+"<h3>❄️ Cooling Occurred</h3>" +
+"Magma cooled and solidified into igneous rock.";
 
-    if(heat >= 25 && pressure >= 60){
+challenge.innerHTML =
+"✅ Discovery: Cooling forms igneous rock.";
 
-        rock.innerHTML = "💎";
-        rockName.innerHTML = "Metamorphic Rock";
+return;
 
-        result.innerHTML =
-        "<h3>✅ Metamorphic Rock Formed</h3>" +
-        "Heat and pressure changed the rock without melting it.";
+}
 
-        challenge.innerHTML =
-        "✅ Discovery: Both sedimentary and igneous rocks can become metamorphic rocks.";
+if(heat >= 75){
 
-        return;
-    }
+rock.innerHTML = "🌋";
+rockName.innerHTML = "Magma";
 
-    if(startRock === "igneous"){
+result.innerHTML =
+"<h3>🔥 Melting Occurred</h3>" +
+"The rock melted and became magma.";
 
-        rock.innerHTML = "🧱";
-        rockName.innerHTML = "Igneous Rock";
+challenge.innerHTML =
+"✅ Discovery: Excessive heat produces magma.";
 
-    } else {
+return;
 
-        rock.innerHTML = "🪨";
-        rockName.innerHTML = "Sedimentary Rock";
-    }
+}
 
-    result.innerHTML =
-    "<h3>No Significant Change</h3>" +
-    "The conditions were not strong enough to transform the rock.";
+if(heat >= 25 && pressure >= 60){
 
-    challenge.innerHTML = "";
+rock.innerHTML = "💎";
+rockName.innerHTML = "Metamorphic Rock";
+
+result.innerHTML =
+"<h3>✅ Metamorphic Rock Formed</h3>" +
+"Heat and pressure changed the rock without melting it.";
+
+challenge.innerHTML =
+"✅ Discovery: Heat and pressure create metamorphic rock.";
+
+return;
+
+}
+
+updateStartingRock();
+
+result.innerHTML =
+"<h3>No Significant Change</h3>" +
+"Conditions were not strong enough to transform the rock.";
+
+challenge.innerHTML = "";
+
 }
 
 function resetSimulation(){
 
-    document.getElementById("startingRock").value =
-    "sedimentary";
+document.getElementById("startingRock").value =
+"sedimentary";
 
-    document.getElementById("rock").innerHTML =
-    "🪨";
+heatSlider.value = 40;
+pressureSlider.value = 50;
+coolingSlider.value = 0;
+weatheringSlider.value = 0;
 
-    document.getElementById("rockName").innerHTML =
-    "Sedimentary Rock";
+document.getElementById("pressureValue").innerHTML = "50";
+document.getElementById("coolingValue").innerHTML = "0";
+document.getElementById("weatheringValue").innerHTML = "0";
 
-    heatSlider.value = 40;
-    pressureSlider.value = 50;
+document.getElementById("heatLabel").innerHTML = "Warm";
+document.getElementById("heatLabel").style.color = "#FFC107";
 
-    mercury.style.height = "40%";
-    mercury.style.background = "#FFC107";
+mercury.style.height = "40%";
+mercury.style.background = "#FFC107";
 
-    document.getElementById("heatLabel").innerHTML =
-    "Warm";
+document.getElementById("rock").innerHTML = "🪨";
+document.getElementById("rockName").innerHTML =
+"Sedimentary Rock";
 
-    document.getElementById("heatLabel").style.color =
-    "#FFC107";
+document.getElementById("result").innerHTML =
+"Adjust the sliders and click Transform Rock.";
 
-    document.getElementById("pressureValue").innerHTML =
-    "50";
+document.getElementById("challenge").innerHTML = "";
 
-    document.getElementById("result").innerHTML =
-    'Adjust the heat and pressure and click "Transform Rock".';
-
-    document.getElementById("challenge").innerHTML =
-    "";
 }
 
 </script>
